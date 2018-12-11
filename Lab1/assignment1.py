@@ -7,29 +7,31 @@ def experiment(N, n_max, nD, alpha):
     P = int(round(alpha*N))  # number of data points (rounded to closest int)
     mu, variance = 0, 1
     sigma = np.sqrt(variance)
-    xi_mu, S_mu = np.zeros([P, N]), np.zeros(P, int)  # TODO: should we add the threshold theta?
+    # xi_mu, S_mu = np.zeros([P, N]), np.zeros(P, int)  # TODO: should we add the threshold theta?
     
     data=[]
     # generate nD datasets
     for i in range(nD):
-        for i in range(P):
-            labels = np.random.binomial(1, 0.5, 1)  # number of trials, probability of each trial
-            # result of flipping a coin, tested N times.
-            labels[labels < 1] = -1
-            S_mu[i] = labels
-            xi_mu[i] = np.random.normal(mu, sigma, N)
-        data.append([xi_mu,S_mu])
+        labels = np.random.binomial(1, 0.5, (P, 1))  # number of trials, probability of each trial
+        # result of flipping a coin, tested N times.
+        labels[labels < 1] = -1
+        S_mu = labels
+        xi_mu = np.random.normal(mu, sigma, (P,N))
+        data.append([xi_mu, S_mu])
         
     success = perceptron(data, N, P, n_max)
     return success
 
 
 def perceptron(data, N, P, n_max):
-    
-    w = np.zeros(len(data[0][0][1]))  # initialize the weights as zero
+
+
     success=0
     # repeat training for several randomized datasets
     for i in range(nD):
+
+        w = np.zeros(len(data[0][0][1]))  # initialize the weights as zero
+
         X = data[i][0]
         Y = data[i][1]
 
@@ -42,7 +44,7 @@ def perceptron(data, N, P, n_max):
                 if E <= 0:
                     w = w + (1/N)*X[j]*Y[j]
                     done = False
-            if done:
+            if done == True:
                 success += 1
                 break
             
@@ -57,19 +59,16 @@ if __name__ == "__main__":
     nD = 50
     N = 20
 
-    #  As mentioned in assignment, set parameters as large as possible (within reason...)
-    n_max *= 5
-    nD *= 6
-    N *= 5
+    # np.random.seed(0)  # To make reproducible sets (if needed)
 
     # determine the value of the fraction of successful runs as a function of alpha=P/N
-    alpha=np.arange(0.75, 3.25, 0.25)
+    alpha = np.arange(0.75, 3.25, 0.25)
 
-    success_list=[]
+    success_list = []
     for a in alpha:
         success_list.append(experiment(N, n_max, nD, a))
 
-    norm_success = np.divide(success_list, nD)
+    norm_success = np.divide(np.array(success_list), nD)
 
     print('alpha: {}'.format(alpha))
     print('success_list: {}'.format(success_list))
