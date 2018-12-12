@@ -41,7 +41,8 @@ def perceptron(data, N, P, n_max):
             for j in range(P):  # this loop runs the P examples
                 E = np.dot(X[j], w)*Y[j]  # the local potential
                 # we only modify the weights when E<=0. Otherwise they stay the same
-                if E <= 0:
+                c = 0
+                if E <= c:
                     w = w + (1/N)*X[j]*Y[j]
                     done = False
             if done == True:
