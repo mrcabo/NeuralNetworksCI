@@ -51,19 +51,7 @@ def perceptron(data, N, P, n_max):
     return success
 
 
-if __name__ == "__main__":
-
-    # Run your code in order to study Perceptron training at least for the following parameter settings:
-    # N = 20, P = αN with α = 0.75, 1.0, 1.25, . . . 3.0, nD =50, n_max =100
-    n_max = 100
-    nD = 50
-    N = 20
-
-    # np.random.seed(0)  # To make reproducible sets (if needed)
-
-    # determine the value of the fraction of successful runs as a function of alpha=P/N
-    alpha = np.arange(0.75, 3.25, 0.25)
-
+def test_runs(n_max, nD, N, alpha, ax):
     success_list = []
     for a in alpha:
         success_list.append(experiment(N, n_max, nD, a))
@@ -74,8 +62,31 @@ if __name__ == "__main__":
     print('success_list: {}'.format(success_list))
     print('norm_success: {}'.format(norm_success))
 
-    plt.plot(alpha, norm_success)
+    ax.plot(alpha, norm_success, label='N: {}'.format(N))
+
+
+if __name__ == "__main__":
+
+    # Run your code in order to study Perceptron training at least for the following parameter settings:
+    # N = 20, P = αN with α = 0.75, 1.0, 1.25, . . . 3.0, nD =50, n_max =100
+    n_max = 100
+    nD = 50
+    N_array = [5, 10, 15, 20, 50, 100]
+
+    # np.random.seed(0)  # To make reproducible sets (if needed)
+
+    # determine the value of the fraction of successful runs as a function of alpha=P/N
+    alpha = np.arange(0.75, 3.25, 0.25)
+
+    fig = plt.figure()
+    ax = plt.subplot(111)
+
+    for N in N_array:
+        test_runs(n_max, nD, N, alpha, ax)
+
     plt.xlabel(r'$\alpha = P/N$')
     plt.ylabel(r'$Q_{l.s.}$')
-    plt.savefig('Q-alpha-graph.png')
+    ax.legend()
+    fig.savefig('Q-alpha-graph.png')
     plt.show()
+
