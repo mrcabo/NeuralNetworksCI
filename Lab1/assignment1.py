@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import progressbar
 
 
 # I put it in a function so that we can change the values for alpha easily
@@ -7,16 +8,17 @@ def experiment(N, n_max, nD, alpha):
     P = int(round(alpha*N))  # number of data points (rounded to closest int)
     mu, variance = 0, 1
     sigma = np.sqrt(variance)
-    # xi_mu, S_mu = np.zeros([P, N]), np.zeros(P, int)  # TODO: should we add the threshold theta?
-    
-    data=[]
+    # theta = -1.0  # to make it inhomogeneous
+    data = []
     # generate nD datasets
-    for i in range(nD):
+    for _ in range(nD):
         labels = np.random.binomial(1, 0.5, (P, 1))  # number of trials, probability of each trial
         # result of flipping a coin, tested N times.
         labels[labels < 1] = -1
         S_mu = labels
         xi_mu = np.random.normal(mu, sigma, (P,N))
+        # theta_arr = np.full((P, 1), theta)
+        # xi_mu = np.concatenate((xi_mu, theta_arr), axis=1)
         data.append([xi_mu, S_mu])
         
     success = perceptron(data, N, P, n_max)
@@ -29,8 +31,9 @@ def perceptron(data, N, P, n_max):
     success=0
     # repeat training for several randomized datasets
     for i in range(nD):
-
+        # theta = 10.0
         w = np.zeros(len(data[0][0][1]))  # initialize the weights as zero
+        # w[len(w)-1] = theta
 
         X = data[i][0]
         Y = data[i][1]
@@ -58,10 +61,9 @@ def test_runs(n_max, nD, N, alpha, ax):
         success_list.append(experiment(N, n_max, nD, a))
 
     norm_success = np.divide(np.array(success_list), nD)
-
-    print('alpha: {}'.format(alpha))
-    print('success_list: {}'.format(success_list))
-    print('norm_success: {}'.format(norm_success))
+    # print('alpha: {}'.format(alpha))
+    # print('success_list: {}'.format(success_list))
+    # print('norm_success: {}'.format(norm_success))
 
     ax.plot(alpha, norm_success, label='N: {}'.format(N))
 
@@ -82,12 +84,12 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = plt.subplot(111)
 
-    for N in N_array:
+    for N in progressbar.progressbar(N_array):
         test_runs(n_max, nD, N, alpha, ax)
 
     plt.xlabel(r'$\alpha = P/N$')
     plt.ylabel(r'$Q_{l.s.}$')
     ax.legend()
-    fig.savefig('Q-alpha-graph.png')
+    fig.savefig('graphs/Q-alpha-graph.png')
     plt.show()
 
