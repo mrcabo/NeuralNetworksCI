@@ -90,6 +90,6 @@ if __name__ == "__main__":
     plt.xlabel(r'$\alpha = P/N$')
     plt.ylabel(r'$Q_{l.s.}$')
     ax.legend()
-    fig.savefig('graphs/Q-alpha-graph.png')
+    fig.savefig('Lab1/graphs/Q-alpha-graph.png')
     plt.show()
 
